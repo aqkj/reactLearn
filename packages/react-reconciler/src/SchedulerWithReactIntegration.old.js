@@ -84,6 +84,7 @@ const initialTimeMs: number = Scheduler_now();
 // the behavior of performance.now and keep our times small enough to fit
 // within 32 bits.
 // TODO: Consider lifting this into Scheduler.
+// 计算时间
 export const now =
   initialTimeMs < 10000 ? Scheduler_now : () => Scheduler_now() - initialTimeMs;
 
@@ -161,16 +162,22 @@ export function cancelCallback(callbackNode: mixed) {
     Scheduler_cancelCallback(callbackNode);
   }
 }
-
+/**
+ * 同步更新队列
+ */
 export function flushSyncCallbackQueue() {
+  // 立即回调节点
   if (immediateQueueCallbackNode !== null) {
     const node = immediateQueueCallbackNode;
     immediateQueueCallbackNode = null;
     Scheduler_cancelCallback(node);
   }
+  // 同步更新队列实现
   flushSyncCallbackQueueImpl();
 }
-
+/**
+ * 同步更新队列实现
+ */
 function flushSyncCallbackQueueImpl() {
   if (!isFlushingSyncQueue && syncQueue !== null) {
     // Prevent re-entrancy.

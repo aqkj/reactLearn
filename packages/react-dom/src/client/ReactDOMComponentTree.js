@@ -30,12 +30,13 @@ import {getParentSuspenseInstance} from './ReactDOMHostConfig';
 
 import invariant from 'shared/invariant';
 import {enableScopeAPI} from 'shared/ReactFeatureFlags';
-
+// 随机字符,用于拼接到属性上
 const randomKey = Math.random()
   .toString(36)
   .slice(2);
 const internalInstanceKey = '__reactFiber$' + randomKey;
 const internalPropsKey = '__reactProps$' + randomKey;
+// 设置容器实例的key
 const internalContainerInstanceKey = '__reactContainer$' + randomKey;
 const internalEventHandlersKey = '__reactEvents$' + randomKey;
 const internalEventHandlerListenersKey = '__reactListeners$' + randomKey;
@@ -56,11 +57,17 @@ export function precacheFiberNode(
 ): void {
   (node: any)[internalInstanceKey] = hostInst;
 }
-
+/**
+ * 关联容器节点和root对象
+ */
 export function markContainerAsRoot(hostRoot: Fiber, node: Container): void {
+  // 赋值
   node[internalContainerInstanceKey] = hostRoot;
 }
-
+/**
+ * 
+ * @param {Container} node 
+ */
 export function unmarkContainerAsRoot(node: Container): void {
   node[internalContainerInstanceKey] = null;
 }

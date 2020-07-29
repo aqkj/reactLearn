@@ -244,16 +244,29 @@ function findHostInstanceWithWarning(
   }
   return findHostInstance(component);
 }
-
+/**
+ * 创建容器
+ * @param {Element} containerInfo 容器节点
+ * @param {number} tag 标签
+ * @param {boolean} hydrate 是否合并
+ * @param {object} hydrationCallbacks 配置回调对象
+ */
 export function createContainer(
   containerInfo: Container,
   tag: RootTag,
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): OpaqueRoot {
+  // 创建root根节点
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
-
+/**
+ * 更新容器
+ * @param {ReactNodeList} element 元素列表
+ * @param {FiberRootNode} container 根容器对象
+ * @param {object} parentComponent 父组件实例
+ * @param {function} callback 回调方法
+ */
 export function updateContainer(
   element: ReactNodeList,
   container: OpaqueRoot,
@@ -263,6 +276,7 @@ export function updateContainer(
   if (__DEV__) {
     onScheduleRoot(container, element);
   }
+  // 获取当前实际结构节点
   const current = container.current;
   const eventTime = requestEventTime();
   if (__DEV__) {

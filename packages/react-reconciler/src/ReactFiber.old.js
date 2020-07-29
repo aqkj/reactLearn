@@ -112,7 +112,13 @@ if (__DEV__) {
 }
 
 let debugCounter = 1;
-
+/**
+ * 结构node对象
+ * @param {number} tag 标签
+ * @param {object} pendingProps 属性
+ * @param {any} key 唯一值
+ * @param {number} mode 模式id
+ */
 function FiberNode(
   tag: WorkTag,
   pendingProps: mixed,
@@ -188,7 +194,9 @@ function FiberNode(
     this._debugOwner = null;
     this._debugNeedsRemount = false;
     this._debugHookTypes = null;
+    // 判断是否存在不可扩展方法
     if (!hasBadMapPolyfill && typeof Object.preventExtensions === 'function') {
+      // 将当前对象设置为不可扩展
       Object.preventExtensions(this);
     }
   }
@@ -207,6 +215,13 @@ function FiberNode(
 //    is faster.
 // 5) It should be easy to port this to a C struct and keep a C implementation
 //    compatible.
+/**
+ * 创建结构
+ * @param {number} tag 标签
+ * @param {object} pendingProps 参数
+ * @param {any} key key唯一值
+ * @param {number} mode 模式
+ */
 const createFiber = function(
   tag: WorkTag,
   pendingProps: mixed,
@@ -214,6 +229,7 @@ const createFiber = function(
   mode: TypeOfMode,
 ): Fiber {
   // $FlowFixMe: the shapes are exact here but Flow doesn't like constructors
+  // 创建node对象
   return new FiberNode(tag, pendingProps, key, mode);
 };
 
@@ -429,12 +445,16 @@ export function resetWorkInProgress(workInProgress: Fiber, renderLanes: Lanes) {
 
   return workInProgress;
 }
-
+/**
+ * 创建根结构
+ * @param {number} tag 标签id
+ */
 export function createHostRootFiber(tag: RootTag): Fiber {
   let mode;
+  // 判断标签是否是并发根
   if (tag === ConcurrentRoot) {
     mode = ConcurrentMode | BlockingMode | StrictMode;
-  } else if (tag === BlockingRoot) {
+  } else if (tag === BlockingRoot) { // 
     mode = BlockingMode | StrictMode;
   } else {
     mode = NoMode;
@@ -446,7 +466,7 @@ export function createHostRootFiber(tag: RootTag): Fiber {
     // Without some nodes in the tree having empty base times.
     mode |= ProfileMode;
   }
-
+  // 创建结构
   return createFiber(HostRoot, null, null, mode);
 }
 

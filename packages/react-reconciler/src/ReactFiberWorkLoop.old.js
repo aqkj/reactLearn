@@ -358,19 +358,25 @@ let shouldFireAfterActiveInstanceBlur: boolean = false;
 export function getWorkInProgressRoot(): FiberRoot | null {
   return workInProgressRoot;
 }
-
+/**
+ * 请求事件时间
+ */
 export function requestEventTime() {
+  // 判断是否有执行上下文，并且不为0
   if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
     // We're inside React, so it's fine to read the actual time.
     return now();
   }
   // We're not inside React, so we may be in the middle of a browser event.
+  // 如果当前事件时间存在，则直接返回
   if (currentEventTime !== NoTimestamp) {
     // Use the same start time for all updates until we enter React again.
     return currentEventTime;
   }
   // This is the first update since React yielded. Compute a new start time.
+  // 设置当前事件时间
   currentEventTime = now();
+  // 返回时间
   return currentEventTime;
 }
 
@@ -1219,17 +1225,27 @@ export function discreteUpdates<A, B, C, D, R>(
     }
   }
 }
-
+/**
+ * 非匹配更新
+ * @param {Function} fn 回调
+ * @param {any} a 回调参数
+ */
 export function unbatchedUpdates<A, R>(fn: (a: A) => R, a: A): R {
+  // 暂存上一个执行上下文
   const prevExecutionContext = executionContext;
+  // 设置执行环境
   executionContext &= ~BatchedContext;
   executionContext |= LegacyUnbatchedContext;
   try {
+    // 调用回调
     return fn(a);
   } finally {
+    // 还原执行上下文
     executionContext = prevExecutionContext;
+    // 如果执行环境为空
     if (executionContext === NoContext) {
       // Flush the immediate callbacks that were scheduled during this batch
+      // 同步刷新队列
       flushSyncCallbackQueue();
     }
   }

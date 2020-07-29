@@ -643,7 +643,10 @@ export function higherLanePriority(
 ): LanePriority {
   return a !== NoLanePriority && a > b ? a : b;
 }
-
+/**
+ * 填充一个31列的数组
+ * @param {any} initial 填充值
+ */
 export function createLaneMap<T>(initial: T): LaneMap<T> {
   return new Array(TotalLanes).fill(initial);
 }

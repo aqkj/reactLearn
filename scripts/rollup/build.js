@@ -1,16 +1,26 @@
 'use strict';
-
+/** rollup打包工具 */
 const rollup = require('rollup');
+/** rollup的babel插件 */
 const babel = require('rollup-plugin-babel');
 const closure = require('./plugins/closure-plugin');
+/** 将commonjs模块转成es6插件 */
 const commonjs = require('rollup-plugin-commonjs');
+/** 格式化打包后的代码的插件 */
 const prettier = require('rollup-plugin-prettier');
+/** 替换文件中字符串的插件 */
 const replace = require('rollup-plugin-replace');
+/** 移除模块banner的插件 */
 const stripBanner = require('rollup-plugin-strip-banner');
+/** 修改打印颜色的插件 */
 const chalk = require('chalk');
+/** 路径处理插件 */
 const path = require('path');
+/** 解析node模块插件 */
 const resolve = require('rollup-plugin-node-resolve');
+/** 文件系统操作插件 */
 const fs = require('fs');
+/** 解析参数的模块 */
 const argv = require('minimist')(process.argv.slice(2));
 const Modules = require('./modules');
 const Bundles = require('./bundles');

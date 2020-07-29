@@ -341,14 +341,20 @@ export {
   IsThisRendererActing,
   act,
 };
-
+/**
+ * 获取公共根实例
+ * @param {*} container 
+ */
 export function getPublicRootInstance(
   container: OpaqueRoot,
 ): React$Component<any, any> | PublicInstance | null {
+  // 获取当前实例
   const containerFiber = container.current;
+  // 不存在子节点则返回null
   if (!containerFiber.child) {
     return null;
   }
+  // 存在子节点则switch，标签
   switch (containerFiber.child.tag) {
     case HostComponent:
       return getPublicInstance(containerFiber.child.stateNode);

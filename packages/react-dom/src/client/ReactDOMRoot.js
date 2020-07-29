@@ -60,12 +60,18 @@ import {
 function ReactDOMRoot(container: Container, options: void | RootOptions) {
   this._internalRoot = createRootImpl(container, ConcurrentRoot, options);
 }
-
+/**
+ * reactdom根类
+ * @param {Element} container 容器
+ * @param {number} tag 标签id
+ * @param {object} options 配置
+ */
 function ReactDOMBlockingRoot(
   container: Container,
   tag: RootTag,
   options: void | RootOptions,
 ) {
+  // 内部根
   this._internalRoot = createRootImpl(container, tag, options);
 }
 
@@ -114,7 +120,12 @@ ReactDOMRoot.prototype.unmount = ReactDOMBlockingRoot.prototype.unmount = functi
     unmarkContainerAsRoot(container);
   });
 };
-
+/**
+ * 创建根节点
+ * @param {Element} container 容器
+ * @param {number} tag 标签
+ * @param {object} options 配置
+ */
 function createRootImpl(
   container: Container,
   tag: RootTag,
@@ -129,10 +140,13 @@ function createRootImpl(
       options.hydrationOptions != null &&
       options.hydrationOptions.mutableSources) ||
     null;
+  // 创建容器对象
   const root = createContainer(container, tag, hydrate, hydrationCallbacks);
+  // 关联容器节点和root对象
   markContainerAsRoot(root.current, container);
+  // 获取nodetype类型
   const containerNodeType = container.nodeType;
-
+  // 如果hydrate为true,并且tag标签不为0
   if (hydrate && tag !== LegacyRoot) {
     const doc =
       containerNodeType === DOCUMENT_NODE ? container : container.ownerDocument;
@@ -141,10 +155,11 @@ function createRootImpl(
     // it, then Flow doesn't complain. We intentionally
     // hoist it to reduce code-size.
     eagerlyTrapReplayableEvents(container, ((doc: any): Document));
-  } else if (
+  } else if ( // 判断nodetype类型是否不为片段元素，或者不为根类型
     containerNodeType !== DOCUMENT_FRAGMENT_NODE &&
     containerNodeType !== DOCUMENT_NODE
   ) {
+    // 
     ensureListeningTo(container, 'onMouseEnter');
   }
 
@@ -181,11 +196,16 @@ export function createBlockingRoot(
   warnIfReactDOMContainerInDEV(container);
   return new ReactDOMBlockingRoot(container, BlockingRoot, options);
 }
-
+/**
+ * 创建根组件
+ * @param {Element} container 容器
+ * @param {Object} options 配置
+ */
 export function createLegacyRoot(
   container: Container,
   options?: RootOptions,
 ): RootType {
+  // 创建reactdom根对象
   return new ReactDOMBlockingRoot(container, LegacyRoot, options);
 }
 

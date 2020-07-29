@@ -44,7 +44,9 @@ let warnedAboutHydrateAPI = false;
 
 if (__DEV__) {
   topLevelUpdateWarnings = (container: Container) => {
+    // 判断是否是更节点,并且不是注释节点
     if (container._reactRootContainer && container.nodeType !== COMMENT_NODE) {
+
       const hostInstance = findHostInstanceWithNoPortals(
         container._reactRootContainer._internalRoot.current,
       );
@@ -88,45 +90,65 @@ if (__DEV__) {
     }
   };
 }
-
+/**
+ * 获取react根节点容器
+ * @param {*} container 
+ */
 function getReactRootElementInContainer(container: any) {
+  // 不存在则返回null
   if (!container) {
     return null;
   }
-
+  // 判断node类型，是否为documentnode，如果是则设置为documentElement
   if (container.nodeType === DOCUMENT_NODE) {
     return container.documentElement;
   } else {
+    // 返回第一个子节点
     return container.firstChild;
   }
 }
-
+/**
+ * 需要
+ * @param {*} container 
+ */
 function shouldHydrateDueToLegacyHeuristic(container) {
+  // 获取根节点
   const rootElement = getReactRootElementInContainer(container);
+  // 返回是否存在根节点属性ROOT_ATTRIBUTE_NAME
   return !!(
     rootElement &&
     rootElement.nodeType === ELEMENT_NODE &&
     rootElement.hasAttribute(ROOT_ATTRIBUTE_NAME)
   );
 }
-
+/**
+ * 从dom容器创建根对象
+ * @param {Element} container 容器
+ * @param {boolean} forceHydrate 触发更新
+ */
 function legacyCreateRootFromDOMContainer(
   container: Container,
   forceHydrate: boolean,
 ): RootType {
+  // 判断是否需要强制更新
   const shouldHydrate =
     forceHydrate || shouldHydrateDueToLegacyHeuristic(container);
   // First clear any existing content.
+  // 如果初始化
   if (!shouldHydrate) {
     let warned = false;
     let rootSibling;
+    // 遍历清除所有子元素
     while ((rootSibling = container.lastChild)) {
+      // 判断是否是开发环境
       if (__DEV__) {
+        // 如果子元素中存在根root对象，则警告
         if (
           !warned &&
           rootSibling.nodeType === ELEMENT_NODE &&
           (rootSibling: any).hasAttribute(ROOT_ATTRIBUTE_NAME)
         ) {
+          // 警告为true
           warned = true;
           console.error(
             'render(): Target node has markup rendered by React, but there ' +
@@ -135,10 +157,13 @@ function legacyCreateRootFromDOMContainer(
           );
         }
       }
+      // 移除容器内的子元素
       container.removeChild(rootSibling);
     }
   }
+  // 判断是否为开发环境
   if (__DEV__) {
+    // 判断是否需要合并，并且是初始渲染，并且
     if (shouldHydrate && !forceHydrate && !warnedAboutHydrateAPI) {
       warnedAboutHydrateAPI = true;
       console.warn(
@@ -148,18 +173,23 @@ function legacyCreateRootFromDOMContainer(
       );
     }
   }
-
+  // 创建react根对象,并返回
   return createLegacyRoot(
-    container,
-    shouldHydrate
+    container, // 容器
+    shouldHydrate // 判断是否需要合并
       ? {
-          hydrate: true,
+          hydrate: true, // 设置为true
         }
       : undefined,
   );
 }
-
+/**
+ * 校验callback类型
+ * @param {Function|null} callback 回调
+ * @param {string} callerName 调用者名
+ */
 function warnOnInvalidCallback(callback: mixed, callerName: string): void {
+  // 判断是否为开发环境
   if (__DEV__) {
     if (callback !== null && typeof callback !== 'function') {
       console.error(
@@ -171,7 +201,14 @@ function warnOnInvalidCallback(callback: mixed, callerName: string): void {
     }
   }
 }
-
+/**
+ * 渲染子树并放入容器
+ * @param {React$Component} parentComponent 父组件
+ * @param {ReactNodeList} children 子元素列表
+ * @param {Element} container 容器元素
+ * @param {boolean} forceHydrate 强制触发
+ * @param {Function} callback 回调
+ */
 function legacyRenderSubtreeIntoContainer(
   parentComponent: ?React$Component<any, any>,
   children: ReactNodeList,
@@ -179,17 +216,23 @@ function legacyRenderSubtreeIntoContainer(
   forceHydrate: boolean,
   callback: ?Function,
 ) {
+  // 判断是否是开发环境
   if (__DEV__) {
+    // 校验容器是否合法
     topLevelUpdateWarnings(container);
+    // 校验callback回调是否合法
     warnOnInvalidCallback(callback === undefined ? null : callback, 'render');
   }
 
   // TODO: Without `any` type, Flow says "Property cannot be accessed on any
   // member of intersection type." Whyyyyyy.
+  // 获取根容器对象
   let root: RootType = (container._reactRootContainer: any);
   let fiberRoot;
+  // 如果根容器不存在
   if (!root) {
     // Initial mount
+    // 初始化挂载
     root = container._reactRootContainer = legacyCreateRootFromDOMContainer(
       container,
       forceHydrate,
@@ -198,12 +241,15 @@ function legacyRenderSubtreeIntoContainer(
     if (typeof callback === 'function') {
       const originalCallback = callback;
       callback = function() {
+        // 获取公共根实例
         const instance = getPublicRootInstance(fiberRoot);
+        // 回调调用
         originalCallback.call(instance);
       };
     }
     // Initial mount should not be batched.
     unbatchedUpdates(() => {
+      // 更新容器
       updateContainer(children, fiberRoot, parentComponent, callback);
     });
   } else {
@@ -283,7 +329,12 @@ export function hydrate(
     callback,
   );
 }
-
+/**
+ * render方法
+ * @param {React$Element} element 元素
+ * @param {Element} container 挂载的元素容器
+ * @param {Function} callback 回调
+ */
 export function render(
   element: React$Element<any>,
   container: Container,

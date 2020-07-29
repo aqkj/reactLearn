@@ -262,7 +262,11 @@ if (__DEV__) {
     return testElement.innerHTML;
   };
 }
-
+/**
+ * 监听时间
+ * @param {element} rootContainerInstance 节点实例
+ * @param {*} reactPropEvent 
+ */
 export function ensureListeningTo(
   rootContainerInstance: Element | Node,
   reactPropEvent: string,
