@@ -20,7 +20,9 @@ export type SuspenseConfig = {|
 export type TimeoutConfig = {|
   timeoutMs: number,
 |};
-
+/**
+ * 获取当前suspense配置
+ */
 export function requestCurrentSuspenseConfig(): null | SuspenseConfig {
   return ReactCurrentBatchConfig.suspense;
 }

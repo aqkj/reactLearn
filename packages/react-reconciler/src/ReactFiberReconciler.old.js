@@ -278,6 +278,7 @@ export function updateContainer(
   }
   // 获取当前实际结构节点
   const current = container.current;
+  // 获取事件时间差
   const eventTime = requestEventTime();
   if (__DEV__) {
     // $FlowExpectedError - jest isn't a global, and isn't recognized outside of tests
